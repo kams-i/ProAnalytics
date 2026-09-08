@@ -3,13 +3,16 @@ import type { Request, Response } from 'express';
 import { sequelize } from './config/database.ts';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import errors from './middleware/errorHandler.ts';
+import logger from './middleware/logger.ts';
+import notFound from './middleware/notFound.ts';
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 8500;
 
 app.use(express.json());
-// app.use(logger);
+app.use(logger);
 app.use(cors({
     origin: ['http://localhost:3000', 'https://localhost:3000'],
     credentials: true
@@ -22,6 +25,8 @@ app.get('/', (req: Request, res: Response) => {
 // 1. Mount your routers FIRST
 
 // 2. Fallback & Error Handlers MUST go LAST (after all valid routes)
+app.use(notFound);
+app.use(errors);
 
 const runServer = async () => {
     try {
