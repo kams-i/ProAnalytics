@@ -1,5 +1,6 @@
 import express from 'express';
 import type { Request, Response } from 'express';
+import { sequelize } from './config/database.ts';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
@@ -24,11 +25,11 @@ app.get('/', (req: Request, res: Response) => {
 
 const runServer = async () => {
     try {
-        // await sequelize.authenticate();
-        // console.log('Database connected successfully');
+        await sequelize.authenticate();
+        console.log('Database connected successfully');
 
-        // await sequelize.sync({ alter: true });
-        // console.log(' Models synchronized with database');
+        await sequelize.sync({ alter: true });
+        console.log(' Models synchronized with database');
 
         const server = app.listen(Number(port), () => {
             console.log(`This project is running at ${port}`);
