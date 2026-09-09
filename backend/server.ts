@@ -6,6 +6,7 @@ import cors from 'cors';
 import errors from './middleware/errorHandler.ts';
 import logger from './middleware/logger.ts';
 import notFound from './middleware/notFound.ts';
+import userRoute from './routes/userRoute.ts';
 
 dotenv.config();
 const app = express();
@@ -23,6 +24,9 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // 1. Mount your routers FIRST
+app.use('/api/v5/user', userRoute);
+
+
 
 // 2. Fallback & Error Handlers MUST go LAST (after all valid routes)
 app.use(notFound);

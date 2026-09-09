@@ -4,10 +4,12 @@ import bcrypt from 'bcryptjs';
 import { sequelize } from '../config/database.ts';
 import type { Organization } from './organization.ts';
 
-export enum UserRole {
-    SUPER_ADMIN = 'Super Admin',
-    APP_ADMIN = 'App Admin',
-}
+export const UserRole = {
+    SUPER_ADMIN: 'Super Admin',
+    APP_ADMIN: 'App Admin',
+} as const;
+
+export type UserRole = typeof UserRole[keyof typeof UserRole];
 
 // 1. Attributes interface matching DB columns
 export interface UserAttributes {
@@ -17,12 +19,14 @@ export interface UserAttributes {
     email: string;
     password: string;
     role: UserRole;
+    otpCode?: string | null;
+    otpExpiresAt?: Date | null;
     createdAt?: Date;
     updatedAt?: Date;
 }
 
 // 2. Attributes optional when calling User.create()
-export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'role'> {}
+export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'role' | 'otpCode' | 'otpExpiresAt'> { }
 
 // 3. Model class definition
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -32,6 +36,8 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     public declare email: string;
     public declare password: string;
     public declare role: UserRole;
+    public declare otpCode: string | null;
+    public declare otpExpiresAt: Date | null;
 
     public declare readonly createdAt: Date;
     public declare readonly updatedAt: Date;
@@ -47,7 +53,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
 
     // Automatically hide password when user model is converted to JSON/sent to client
     public toJSON() {
-        const { password, ...values } = this.get();
+        const { password, otpCode, ...values } = this.get();
         return values;
     }
 }
@@ -88,6 +94,16 @@ User.init(
             type: DataTypes.ENUM(...Object.values(UserRole)),
             defaultValue: UserRole.APP_ADMIN,
             allowNull: false,
+        },
+        otpCode: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            field: 'otp_code',
+        },
+        otpExpiresAt: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            field: 'otp_expires_at',
         },
     },
     {
