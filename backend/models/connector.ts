@@ -3,11 +3,13 @@ import type { Optional } from 'sequelize';
 import { sequelize } from '../config/database.ts';
 import type { Application } from './application.ts';
 
-export enum ConnectorStatus {
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',
-    ERROR = 'error',
-}
+export const ConnectorStatus = {
+    ACTIVE: 'active',
+    INACTIVE: 'inactive',
+    ERROR: 'error',
+} as const;
+
+export type ConnectorStatusType = (typeof ConnectorStatus)[keyof typeof ConnectorStatus];
 
 // 1. Attributes interface matching DB columns
 export interface ConnectorAttributes {
@@ -15,7 +17,7 @@ export interface ConnectorAttributes {
     applicationId: string;
     type: string; // e.g. 'postgres', 'mixpanel', 'google_analytics', 'api_key'
     credentials: Record<string, any>; // JSONB for API keys, DB strings, or tokens
-    status: ConnectorStatus;
+    status: ConnectorStatusType;
     lastSyncedAt?: Date | null;
     createdAt?: Date;
     updatedAt?: Date;
@@ -30,7 +32,7 @@ export class Connector extends Model<ConnectorAttributes, ConnectorCreationAttri
     public declare applicationId: string;
     public declare type: string;
     public declare credentials: Record<string, any>;
-    public declare status: ConnectorStatus;
+    public declare status: ConnectorStatusType;
     public declare lastSyncedAt: Date | null;
 
     public declare readonly createdAt: Date;

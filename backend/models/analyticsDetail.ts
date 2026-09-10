@@ -3,18 +3,20 @@ import type { Optional } from 'sequelize';
 import { sequelize } from '../config/database.ts';
 import type { Application } from './application.ts';
 
-export enum AnalyticsDetailType {
-    FUNNEL = 'funnel',
-    HEATMAP = 'heatmap',
-    RETENTION = 'retention',
-    SESSION = 'session',
-}
+export const AnalyticsDetailType = {
+    FUNNEL: 'funnel',
+    HEATMAP: 'heatmap',
+    RETENTION: 'retention',
+    SESSION: 'session',
+} as const;
+
+export type AnalyticsDetailTypeType = (typeof AnalyticsDetailType)[keyof typeof AnalyticsDetailType];
 
 // 1. Attributes interface matching DB columns
 export interface AnalyticsDetailAttributes {
     id: string;
     applicationId: string;
-    type: AnalyticsDetailType;
+    type: AnalyticsDetailTypeType;
     payload: Record<string, any>;
     timestamp: Date;
 }
@@ -26,7 +28,7 @@ export interface AnalyticsDetailCreationAttributes extends Optional<AnalyticsDet
 export class AnalyticsDetail extends Model<AnalyticsDetailAttributes, AnalyticsDetailCreationAttributes> implements AnalyticsDetailAttributes {
     public declare id: string;
     public declare applicationId: string;
-    public declare type: AnalyticsDetailType;
+    public declare type: AnalyticsDetailTypeType;
     public declare payload: Record<string, any>;
     public declare timestamp: Date;
 

@@ -7,6 +7,7 @@ import errors from './middleware/errorHandler.ts';
 import logger from './middleware/logger.ts';
 import notFound from './middleware/notFound.ts';
 import userRoute from './routes/userRoute.ts';
+import organizationRoute from './routes/organizationRoute.ts';
 
 dotenv.config();
 const app = express();
@@ -25,6 +26,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // 1. Mount your routers FIRST
 app.use('/api/v5/user', userRoute);
+app.use('/api/v5/organization', organizationRoute);
 
 
 
