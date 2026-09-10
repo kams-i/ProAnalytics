@@ -3,18 +3,20 @@ import type { Optional } from 'sequelize';
 import { sequelize } from '../config/database.ts';
 import type { Organization } from './organization.ts';
 
-export enum AppStatus {
-    OPERATIONAL = 'Operational',
-    DEGRADED = 'Degraded',
-    DOWN = 'Down',
-}
+export const AppStatus = {
+    OPERATIONAL: 'Operational',
+    DEGRADED: 'Degraded',
+    DOWN: 'Down',
+} as const;
+
+export type AppStatusType = (typeof AppStatus)[keyof typeof AppStatus];
 
 // 1. Attributes interface matching DB columns
 export interface ApplicationAttributes {
     id: string;
     organizationId: string;
     name: string;
-    status: AppStatus;
+    status: AppStatusType;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -27,7 +29,7 @@ export class Application extends Model<ApplicationAttributes, ApplicationCreatio
     public declare id: string;
     public declare organizationId: string;
     public declare name: string;
-    public declare status: AppStatus;
+    public declare status: AppStatusType;
 
     public declare readonly createdAt: Date;
     public declare readonly updatedAt: Date;
